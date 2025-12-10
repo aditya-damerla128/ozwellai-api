@@ -213,11 +213,11 @@ const chatRoute: FastifyPluginAsync = async (fastify) => {
     const authHeader = request.headers.authorization || '';
     const apiKey = authHeader.replace(/^Bearer\s+/i, '').trim();
     
-    // Use Ollama if: explicitly requested via 'ollama' API key, OR if available and no other backend
-    const useOllama = apiKey.toLowerCase() === 'ollama' || ollamaAvailable;
-    
-    // If no backend is available, redirect to mock endpoint
-    if (!ollamaAvailable && apiKey.toLowerCase() !== 'ollama') {
+    // Use Ollama if: explicitly requested via 'ollama' API key AND Ollama is available
+    const useOllama = apiKey.toLowerCase() === 'ollama' && ollamaAvailable;
+
+    // If not using Ollama, redirect to mock endpoint
+    if (!useOllama) {
       // Forward to mock chat endpoint
       const mockUrl = `http://localhost:${process.env.PORT || 3000}/mock/chat`;
       try {
